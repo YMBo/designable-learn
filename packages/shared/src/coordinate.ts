@@ -255,6 +255,11 @@ export function calcRelativeOfPointToRect(
   }
 }
 
+/**
+ * 遍历rects返回最大范围
+ * @param rects
+ * @returns
+ */
 export function calcBoundingRect(rects: IRect[]) {
   if (!rects?.length) return
   if (rects?.length === 1 && !rects[0]) return

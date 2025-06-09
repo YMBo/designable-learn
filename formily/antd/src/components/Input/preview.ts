@@ -60,3 +60,4 @@ Input.Resource = createResource(
     ],
   }
 )
+console.log('Input.Resource ', Input.Resource)

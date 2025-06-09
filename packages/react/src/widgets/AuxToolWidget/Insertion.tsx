@@ -73,7 +73,7 @@ export const Insertion = observer(() => {
     }
     return baseStyle
   }
-
+  console.log('createInsertionStyle', createInsertionStyle())
   return <div className={prefix} style={createInsertionStyle()}></div>
 })
 

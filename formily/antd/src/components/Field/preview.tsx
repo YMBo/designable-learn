@@ -132,9 +132,45 @@ const toDesignableFieldProps = (
   return results
 }
 
+// 页面中渲染的组件是通过props传递下来的
+/**
+ * 这三个是基础组件
+ * VoidField：纯布局容器，不参与数据结构。
+ * ObjectField：组织嵌套对象数据（如 user.name）。
+ * ArrayField：处理动态数组数据（如多个联系人）。
+ * 
+ * 这三个组件通过接收props来渲染对应的物料
+ * 其中接收参数包括但不限于：
+ * 
+ * 数据与校验
+name: 字段名称（支持路径，如 user.name）
+type: 字段类型（string、number、object 等）
+required: 是否必填
+defaultValue: 默认值
+validator: 自定义校验函数
+
+ * UI 与布局
+title: 字段标题
+description: 字段描述
+x-decorator: 装饰器组件（如 FormItem）
+x-component: 渲染组件
+x-component-props: 传递给组件的 props
+
+ * 状态与事件
+visible: 是否可见
+editable: 是否可编辑
+readOnly: 是否只读
+onChange: 值变化回调
+onBlur: 失焦回调
+onFocus: 聚焦回调
+
+
+ */
+
 export const Field: DnFC<ISchema> = observer((props) => {
   const designer = useDesigner()
   const components = useComponents()
+  // 在TreeNodeWidget组件中定义的
   const node = useTreeNode()
   if (!node) return null
   const fieldProps = toDesignableFieldProps(
@@ -143,6 +179,12 @@ export const Field: DnFC<ISchema> = observer((props) => {
     designer.props.nodeIdAttrName,
     node.id
   )
+  console.log('FFFFFF', fieldProps, {
+    props,
+    components,
+    nodeIdAttrName: designer.props.nodeIdAttrName,
+    id: node.id,
+  })
   if (props.type === 'object') {
     return (
       <Container>

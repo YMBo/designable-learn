@@ -12,7 +12,7 @@ export const Content = () => (
           <span
             {...props}
             style={{
-              background: '#eee',
+              background: 'red',
               display: 'inline-block',
               ...props.style,
               padding: '10px 20px',

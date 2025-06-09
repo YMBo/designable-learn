@@ -56,6 +56,9 @@ export class Workspace {
     this.id = props.id || uid()
     this.title = props.title
     this.description = props.description
+
+    console.log('propspropsprops', props)
+    // 中间工作台
     this.viewport = new Viewport({
       engine: this.engine,
       workspace: this,
@@ -65,6 +68,7 @@ export class Workspace {
       moveSensitive: true,
       moveInsertionType: 'all',
     })
+    // 大纲树实例
     this.outline = new Viewport({
       engine: this.engine,
       workspace: this,

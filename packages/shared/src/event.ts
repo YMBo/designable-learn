@@ -171,8 +171,11 @@ export class EventDriver<Engine extends Event = Event, Context = any>
       target[EVENTS_ONCE_SYMBOL] = target[EVENTS_ONCE_SYMBOL] || {}
       const constructor = this['constructor']
       constructor[EVENTS_ONCE_SYMBOL] = constructor[EVENTS_ONCE_SYMBOL] || {}
+      // 获取handler
       const handler = target[EVENTS_ONCE_SYMBOL][type]
+      // 获取container？
       const container = constructor[EVENTS_ONCE_SYMBOL][type]
+      // 如果handler不存在
       if (!handler) {
         if (container) {
           if (options.mode === 'onlyChild') {
@@ -188,6 +191,7 @@ export class EventDriver<Engine extends Event = Event, Context = any>
             if (container.contains(target)) return
           }
         }
+        // 给window绑定type事件
         target.addEventListener(type, listener, options)
         target[EVENTS_ONCE_SYMBOL][type] = listener
         constructor[EVENTS_ONCE_SYMBOL][type] = target

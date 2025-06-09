@@ -7,8 +7,11 @@ import { observer } from '@formily/react'
 import { loadInitialSchema, saveSchema } from '../service'
 
 export const ActionsWidget = observer(() => {
+  // 获取engine
   const designer = useDesigner()
   useEffect(() => {
+    console.log('66666663333')
+    // 加载Schema，设置根节点
     loadInitialSchema(designer)
   }, [])
   const supportLocales = ['zh-cn', 'en-us', 'ko-kr']

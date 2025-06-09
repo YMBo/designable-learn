@@ -38,6 +38,7 @@ export const DashedBox = observer(() => {
         className={prefix + '-title'}
         style={{
           position: 'absolute',
+          background: 'red',
           bottom: '100%',
           left: 0,
           fontSize: 12,

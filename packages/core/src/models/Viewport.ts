@@ -191,6 +191,10 @@ export class Viewport {
     this.nodeElementsStore = {}
   }
 
+  /**
+   * 把展示区的div的位置大小信息存储
+   * @returns
+   */
   getCurrentData() {
     const data: IViewportData = {}
     if (this.isIframe) {
@@ -235,6 +239,9 @@ export class Viewport {
     }
   }
 
+  /**
+   * 给所有drivers挂载contentWindow和viewportElement属性
+   */
   attachEvents() {
     const engine = this.engine
     cancelIdle(this.attachRequest)
@@ -257,6 +264,11 @@ export class Viewport {
     }
   }
 
+  /**
+   *
+   * @param element 视图区的div
+   * @param contentWindow 就是window
+   */
   onMount(element: HTMLElement, contentWindow: Window) {
     this.mounted = true
     this.viewportElement = element
@@ -367,9 +379,16 @@ export class Viewport {
     )
   }
 
-  //相对于页面
+  /**
+   * 相对于页面  返回id对应元素的rect信息
+   * @param id
+   * @returns
+   */
   getElementRectById(id: string) {
+    // 通过id拿到一堆元素
     const elements = this.findElementsById(id)
+
+    // 遍历这些元素，返回最大范围
     const rect = calcBoundingRect(
       elements.map((element) => this.getElementRect(element))
     )
@@ -479,14 +498,22 @@ export class Viewport {
     )
   }
 
+  /**
+   * 返回当前热区的rect范围
+   * @param node
+   * @returns
+   */
   getValidNodeRect(node: TreeNode): Rect {
     if (!node) return
     const rect = this.getElementRectById(node.id)
     if (node && node === node.root && node.isInOperation) {
+      // rect不存在则返回当前视口的rect
       if (!rect) return this.rect
+      // 返回this.rect, rect的最大范围
       return calcBoundingRect([this.rect, rect])
     }
 
+    // 如果node不是root节点
     if (rect) {
       return rect
     } else {

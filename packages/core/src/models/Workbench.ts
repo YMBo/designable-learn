@@ -7,6 +7,10 @@ import {
   SwitchWorkspaceEvent,
 } from '../events'
 import { IEngineContext, WorkbenchTypes } from '../types'
+
+/**
+ * 工作台
+ */
 export class Workbench {
   workspaces: Workspace[]
 

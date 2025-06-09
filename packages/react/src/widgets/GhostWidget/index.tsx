@@ -38,7 +38,7 @@ export const GhostWidget = observer(() => {
   }
   if (!firstNode) return null
   return cursor.status === CursorStatus.Dragging ? (
-    <div ref={ref} className={prefix}>
+    <div style={{ background: 'red' }} ref={ref} className={prefix}>
       {renderNodes()}
     </div>
   ) : null

@@ -57,7 +57,7 @@ Form.Behavior = createBehavior({
 })
 
 Form.Resource = createResource({
-  title: { 'zh-CN': '表单', 'en-US': 'Form' },
+  title: { 'zh-CN': '表单xxxx', 'en-US': 'Form' },
   icon: 'FormLayoutSource',
   elements: [
     {

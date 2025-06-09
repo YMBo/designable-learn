@@ -28,6 +28,7 @@ const mapEnum = (dataSource: any[]) => (item: any, index: number) => {
 export const useLocales = (node: TreeNode) => {
   onFieldReact('*', (field) => {
     const path = field.path.toString().replace(/\.[\d+]/g, '')
+    console.log('表单全部值path---', path)
     const takeMessage = (prop?: string) => {
       const token = `settings.${path}${prop ? `.${prop}` : ''}`
       return node.getMessage(token) || GlobalRegistry.getDesignerMessage(token)

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { createForm } from '@formily/core'
+import { createForm, onFieldInputValueChange } from '@formily/core'
 import { Form } from '@formily/antd'
 import { observer } from '@formily/react'
 import { requestIdle, cancelIdle } from '@designable/shared'
@@ -40,14 +40,20 @@ export const SettingsForm: React.FC<ISettingFormProps> = observer(
       node.designerProps?.propsSchema &&
       selected.length === 1
     )
+    console.log('aaaaa', node?.props)
     const form = useMemo(() => {
       return createForm({
+        //  默认值
         initialValues: node?.designerProps?.defaultProps,
+        // 初始值
         values: node?.props,
         effects(form) {
+          onFieldInputValueChange('*', (field) => {
+            // console.log('表单全部值:', field.form.values)
+          })
           useLocales(node)
-          useSnapshot(operation)
-          props.effects?.(form)
+          // useSnapshot(operation)
+          // props.effects?.(form)
         },
       })
     }, [node, node?.props, schema, operation, isEmpty])
@@ -60,6 +66,7 @@ export const SettingsForm: React.FC<ISettingFormProps> = observer(
             style={props.style}
             key={node.id}
           >
+            {/* {JSON.stringify(node?.props, null, '/t')} */}
             <SettingsFormContext.Provider value={props}>
               <Form
                 form={form}

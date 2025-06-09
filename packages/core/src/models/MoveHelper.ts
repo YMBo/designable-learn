@@ -107,6 +107,7 @@ export class MoveHelper {
     return viewport.getValidNodeLayout(this.closestNode)
   }
 
+  // 计算最近可插入的位置
   calcClosestPosition(point: IPoint, viewport: Viewport): ClosestPosition {
     const closestNode = this.closestNode
     if (!closestNode || !viewport.isPointInViewport(point))
@@ -210,14 +211,25 @@ export class MoveHelper {
     }
   }
 
+  /**
+   * 获取与point最接近的treeNode节点
+   * @param point
+   * @param viewport
+   * @returns
+   */
   calcClosestNode(point: IPoint, viewport: Viewport): TreeNode {
+    // touchNode 就是当前鼠标在中间工作区命中的tree Node
     if (this.touchNode) {
+      // 通过querySelectorAll获取treeNode对应的元素并通过getBoundingClientRect获取元素定位信息
       const touchNodeRect = viewport.getValidNodeRect(this.touchNode)
       if (!touchNodeRect) return
+      // 如果touchNode有子元素
       if (this.touchNode?.children?.length) {
+        // 计算point到边touchNodeRect的最小距离
         const touchDistance = calcDistancePointToEdge(point, touchNodeRect)
         let minDistance = touchDistance
         let minDistanceNode = this.touchNode
+        // 循环touchNode下的所有子节点,找出与当前point距离子元素minDistanceNode
         this.touchNode.eachChildren((node) => {
           const rect = viewport.getElementRectById(node.id)
           if (!rect) return
@@ -229,22 +241,29 @@ export class MoveHelper {
             minDistanceNode = node
           }
         })
+        // 返回与point最近的子treeNode节点
         return minDistanceNode
       } else {
+        // 如果没有子节点则直接返回touchNode
         return this.touchNode
       }
     }
     return this.operation.tree
   }
 
+  /**
+   * 返回可插入范围
+   */
   calcClosestRect(viewport: Viewport, closestDirection: ClosestPosition): Rect {
     const closestNode = this.closestNode
     if (!closestNode || !closestDirection) return
+    // 返回当前热区的rect范围
     const closestRect = viewport.getValidNodeRect(closestNode)
     if (
       closestDirection === ClosestPosition.InnerAfter ||
       closestDirection === ClosestPosition.InnerBefore
     ) {
+      // 如果是插入到closestNode内部，则遍历closestNode子项返回rect
       return viewport.getChildrenRect(closestNode)
     } else {
       return closestRect
@@ -268,18 +287,30 @@ export class MoveHelper {
     }
   }
 
+  // 在useDragDropEffect调用的
   dragStart(props: IMoveHelperDragStartProps) {
+    // 拿到的是当前拖拽node的elements内容
     const nodes = TreeNode.filterDraggable(props?.dragNodes)
+    console.log('nnn sourceId dragStart', nodes)
     if (nodes.length) {
+      // 拖拽的节点
       this.dragNodes = nodes
+      // 触发个事件，实际触发的是effects注册的内容
+      // 目前看代码 没有注册，这步相当于啥都没干
       this.trigger(
         new DragNodeEvent({
+          //目标节点 ，this.operation.tree这是根节点
           target: this.operation.tree,
+          // 拖拽的节点
           source: this.dragNodes,
         })
       )
+
+      // 将中间工作台所有的node缓存到nodeElementsStore中
       this.viewport.cacheElements()
+      // 设置当前抓取状态
       this.cursor.setDragType(CursorDragType.Move)
+      // 标记
       this.dragging = true
     }
   }
@@ -287,45 +318,61 @@ export class MoveHelper {
   dragMove(props: IMoveHelperDragMoveProps) {
     const { point, touchNode } = props
     if (!this.dragging) return
+    // 如果在大纲树区域内
     if (this.outline.isPointInViewport(point, false)) {
       this.activeViewport = this.outline
+      // 目标区域的node实例
       this.touchNode = touchNode
       this.closestNode = this.calcClosestNode(point, this.outline)
     } else if (this.viewport.isPointInViewport(point, false)) {
+      // 如果在工作区
       this.activeViewport = this.viewport
+      //
       this.touchNode = touchNode
+      // 获取与point最接近的treeNode节
       this.closestNode = this.calcClosestNode(point, this.viewport)
     }
+
+    // 必须在大纲区或中间工作台才生效
     if (!this.activeViewport) return
 
+    // 这一步是为了找可插入位置
+    // 大纲区
     if (this.activeViewport === this.outline) {
       this.outlineClosestDirection = this.calcClosestPosition(
         point,
         this.outline
       )
+
       this.viewportClosestDirection = this.outlineClosestDirection
     } else {
+      // 工作台
       this.viewportClosestDirection = this.calcClosestPosition(
         point,
         this.viewport
       )
       this.outlineClosestDirection = this.viewportClosestDirection
     }
+
     if (this.outline.mounted) {
+      // 相对于当前大纲树的rect信息
       this.outlineClosestRect = this.calcClosestRect(
         this.outline,
         this.outlineClosestDirection
       )
+      // 相对于视口的位置信息
       this.outlineClosestOffsetRect = this.calcClosestOffsetRect(
         this.outline,
         this.outlineClosestDirection
       )
     }
     if (this.viewport.mounted) {
+      // 相对于当前工作台的rect信息
       this.viewportClosestRect = this.calcClosestRect(
         this.viewport,
         this.viewportClosestDirection
       )
+      // 相对于视口的位置信息
       this.viewportClosestOffsetRect = this.calcClosestOffsetRect(
         this.viewport,
         this.viewportClosestDirection

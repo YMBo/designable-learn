@@ -19,6 +19,7 @@ export class Subscribable<ExtendsType = any> {
     for (const key in this.subscribers) {
       if (isFn(this.subscribers[key])) {
         event['context'] = context
+        // 执行订阅的事件，如果有返回false的interrupted=true
         if (this.subscribers[key](event) === false) {
           interrupted = true
         }

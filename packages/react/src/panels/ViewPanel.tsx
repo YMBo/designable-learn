@@ -30,6 +30,7 @@ export const ViewPanel: React.FC<IViewPanelProps> = observer((props) => {
       setVisible(false)
     }
   }, [workbench.type])
+
   if (workbench.type !== props.type) return null
   const render = () => {
     return props.children(tree, (payload) => {
@@ -37,6 +38,7 @@ export const ViewPanel: React.FC<IViewPanelProps> = observer((props) => {
       tree.takeSnapshot()
     })
   }
+
   if (workbench.type === 'DESIGNABLE')
     return (
       <Viewport dragTipsDirection={props.dragTipsDirection}>

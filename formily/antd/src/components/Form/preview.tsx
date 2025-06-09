@@ -39,6 +39,7 @@ Form.Behavior = createBehavior({
       draggable: !node.isRoot,
       cloneable: !node.isRoot,
       deletable: !node.isRoot,
+      // 控制元素是否可拖拽
       droppable: true,
       propsSchema: {
         type: 'object',
@@ -69,3 +70,4 @@ Form.Resource = createResource({
     },
   ],
 })
+console.log('Form.Resource', Form.Resource)

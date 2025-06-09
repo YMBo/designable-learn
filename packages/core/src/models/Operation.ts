@@ -34,6 +34,7 @@ export class Operation {
   constructor(workspace: Workspace) {
     this.engine = workspace.engine
     this.workspace = workspace
+    // 根节点定义
     this.tree = new TreeNode({
       componentName: this.engine.props.rootComponentName,
       ...this.engine.props.defaultComponentTree,

@@ -21,9 +21,14 @@ export interface ITreeNodeWidgetProps {
 export const TreeNodeWidget: React.FC<ITreeNodeWidgetProps> = observer(
   (props: ITreeNodeWidgetProps) => {
     const designer = useDesigner(props.node?.designerProps?.effects)
+    // 从context拿到所有物料
     const components = useComponents()
+
+    // debugger
+    // 就是外面传的tree，node树的根节点
     const node = props.node
     const renderChildren = () => {
+      // debugger
       if (node?.designerProps?.selfRenderChildren) return []
       return node?.children?.map((child) => {
         return <TreeNodeWidget key={child.id} node={child} />
@@ -31,22 +36,29 @@ export const TreeNodeWidget: React.FC<ITreeNodeWidgetProps> = observer(
     }
     const renderProps = (extendsProps: any = {}) => {
       const props = {
+        // 这里的designerProps就是组件定义preview.tsx文件中Behavior定义的designerProps
         ...node.designerProps?.defaultProps,
         ...extendsProps,
+        // 这里的node props就是在物料Resource里定义的props
         ...node.props,
         ...node.designerProps?.getComponentProps?.(node),
       }
+      console.log('pppp', node.props, extendsProps)
       if (node.depth === 0) {
         delete props.style
       }
+      // debugger
       return props
     }
     const renderComponent = () => {
       const componentName = node.componentName
       const Component = components[componentName]
+      console.log('pppp node', node)
       const dataId = {}
+      // debugger
       if (Component) {
         if (designer) {
+          // 给Dom挂载nodeid
           dataId[designer?.props?.nodeIdAttrName] = node.id
         }
         return React.createElement(
@@ -63,6 +75,8 @@ export const TreeNodeWidget: React.FC<ITreeNodeWidgetProps> = observer(
 
     if (!node) return null
     if (node.hidden) return null
+    // debugger
+
     return React.createElement(
       TreeNodeContext.Provider,
       { value: node },

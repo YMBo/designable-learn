@@ -64,6 +64,8 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = observer(
       }
       return buf
     }, [])
+
+    console.log('sources', sources)
     const remainItems =
       sources.reduce((length, source) => {
         return length + (source.span ?? 1)

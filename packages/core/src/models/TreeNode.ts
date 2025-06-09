@@ -130,6 +130,7 @@ export class TreeNode {
       return node
     }
     this.id = node.id || uid()
+
     if (parent) {
       this.parent = parent
       this.depth = parent.depth + 1
@@ -141,7 +142,10 @@ export class TreeNode {
       this.isSelfSourceNode = node.isSourceNode || false
       TreeNodes.set(this.id, this)
     }
+
     if (node) {
+      // 更新node节点属性
+      // 递归构造children
       this.from(node)
     }
     this.makeObservable()
@@ -167,8 +171,11 @@ export class TreeNode {
     })
   }
 
+  /**获取node的所有的designerProps */
   get designerProps(): IDesignerProps {
+    // 对应node节点的behaviors子项
     const behaviors = GlobalRegistry.getDesignerBehaviors(this)
+    console.log('behaviors00000', this, behaviors)
     const designerProps: IDesignerProps = behaviors.reduce((buf, pattern) => {
       if (!pattern.designerProps) return buf
       Object.assign(buf, resolveDesignerProps(this, pattern.designerProps))
@@ -496,6 +503,7 @@ export class TreeNode {
   }
 
   setProps(props?: any) {
+    console.log('表单全部值-treeNode', props)
     return this.triggerMutation(
       new UpdateNodePropsEvent({
         target: this,
@@ -715,29 +723,47 @@ export class TreeNode {
     )
   }
 
+  /**
+   * 根据传入的 ITreeNode 对象更新当前 TreeNode 实例的属性
+   * @param node - 可选的 ITreeNode 对象，用于提供更新的属性值
+   */
   from(node?: ITreeNode) {
+    // 如果没有传入 node 对象，则直接返回
     if (!node) return
+    // 触发 FromNodeEvent 事件，并在事件处理函数中更新当前节点的属性
     return this.triggerMutation(
+      // 创建 FromNodeEvent 事件实例，指定目标节点为当前节点，源数据为传入的 node 对象
       new FromNodeEvent({
         target: this,
         source: node,
       }),
+      // 事件处理函数，用于更新当前节点的属性
       () => {
+        // 如果传入的 node 对象有 id 属性，并且与当前节点的 id 不同
         if (node.id && node.id !== this.id) {
+          // 从 TreeNodes 映射中删除当前节点的旧 id
           TreeNodes.delete(this.id)
+          // 将新 id 及其对应的节点添加到 TreeNodes 映射中
           TreeNodes.set(node.id, this)
+          // 更新当前节点的 id 为新的 id
           this.id = node.id
         }
+        // 如果传入的 node 对象有 componentName 属性，则更新当前节点的 componentName
         if (node.componentName) {
           this.componentName = node.componentName
         }
+        // 更新当前节点的 props 属性为传入的 node 对象的 props 属性，如果没有则使用空对象
         this.props = node.props ?? {}
+        // 如果传入的 node 对象有 hidden 属性，则更新当前节点的 hidden 属性
         if (node.hidden) {
           this.hidden = node.hidden
         }
+        // 如果传入的 node 对象有 children 属性
         if (node.children) {
+          // 将当前节点的 children 属性更新为根据传入的子节点数组创建的新 TreeNode 实例数组
           this.children =
             node.children?.map?.((node) => {
+              // 为每个子节点创建一个新的 TreeNode 实例，并指定其父节点为当前节点
               return new TreeNode(node, this)
             }) || []
         }
@@ -864,20 +890,28 @@ export class TreeNode {
     return nodes.filter((node) => node.allowTranslate())
   }
 
+  // 找到可拖拽节点
   static filterDraggable(nodes: TreeNode[] = []) {
     return nodes.reduce((buf, node) => {
+      // 是否可拖拽
       if (!node.allowDrag()) return buf
+      // 如果是从左边物料区拖拽，则designerProps这个值是空对象
+      // 如果物料定义的时候存在designerProps.getDragNodes
       if (isFn(node?.designerProps?.getDragNodes)) {
         const transformed = node.designerProps.getDragNodes(node)
         return transformed ? buf.concat(transformed) : buf
       }
+
+      // 左边物料区的node创建的时候componentName都是'$$ResourceNode$$'
       if (node.componentName === '$$ResourceNode$$')
+        // 这里的children就是物料定义时Resource属性下的elements属性，是TreeNode实例数组
         return buf.concat(node.children)
       return buf.concat([node])
     }, [])
   }
 
   static filterDroppable(nodes: TreeNode[] = [], parent: TreeNode) {
+    console.log('ddddenddd', { nodes, parent })
     return nodes.reduce((buf, node) => {
       if (!node.allowDrop(parent)) return buf
       if (isFn(node.designerProps?.getDropNodes)) {

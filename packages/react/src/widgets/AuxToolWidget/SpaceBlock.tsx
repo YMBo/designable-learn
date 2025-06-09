@@ -74,6 +74,7 @@ export const SpaceBlock = observer(() => {
                 style={{
                   top: 0,
                   left: 0,
+                  background: 'red',
                   height: crossDragNodesRect.height,
                   width: crossDragNodesRect.width,
                   transform: `perspective(1px) translate3d(${crossDragNodesRect.x}px,${crossDragNodesRect.y}px,0)`,

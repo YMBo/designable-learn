@@ -34,10 +34,13 @@ export const transformToSchema = (
   node: ITreeNode,
   options?: ITransformerOptions
 ): IFormilySchema => {
+  debugger
   const realOptions = createOptions(options)
+  console.log('node', node)
   const root = findNode(node, (child) => {
     return child.componentName === realOptions.designableFormName
   })
+  console.log('root', root)
   const schema = {
     type: 'object',
     properties: {},
